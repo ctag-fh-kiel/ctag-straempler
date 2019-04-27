@@ -65,7 +65,7 @@
 - The [Espressif ESP32](https://en.wikipedia.org/wiki/ESP32) platform used for CTAG Strämpler is, with regard to its computational power and I/O capabilities, hard at its limit. We're squeezing the platform here and are already surprised, what one can get out of $5 chip in the year 2019. Surely, other DSPs / microcontrollers could do a better job, but do they allow for internet of things as easily?
 
 ## How to get started:
-See the [Wiki pages]() of this project.
+See the [Wiki pages](https://github.com/ctag-fh-kiel/ctag-straempler/wiki) of this project.
 
 ## Links
 - [Demonstration videos on YouTube]().
