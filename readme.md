@@ -68,8 +68,8 @@
 See the [Wiki pages](https://github.com/ctag-fh-kiel/ctag-straempler/wiki) of this project.
 
 ## Links
-- [Demonstration videos on YouTube]().
-- [PCB source files]().
+- [Demonstration videos on YouTube](https://youtu.be/zmj8tKPHV8g).
+- [PCB source files](https://github.com/ctag-fh-kiel/esp32-eurorack-audio), in KiCad format.
 - [TROLL8](https://github.com/ctag-fh-kiel/troll-8), another cool CTAG project.
 
 ## Licenses:
