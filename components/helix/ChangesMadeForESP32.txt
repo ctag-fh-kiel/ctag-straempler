@@ -1,0 +1,7 @@
+The following changes have been made to the Helix MP3 decoder source code
+for porting on to the ESP32 microcontroller. 
+
+- Modified CNZ to use GCC default
+- Modified MULSHIFT32 to not use assembler code
+
+

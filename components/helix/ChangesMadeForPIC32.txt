@@ -1,0 +1,8 @@
+The following changes have been made to the Helix MP3 decoder source code
+for porting on to the PIC32MX microcontroller. 
+
+1. Commented out the assembly implementation of FASTABS() function in
+assembly.h and replaced with the C equivalent.
+
+2. Commented out the line 47 in file mp3dec.h as this may not be 
+applicable to the PIC32.

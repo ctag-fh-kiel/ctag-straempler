@@ -1,0 +1,6 @@
+[submodule "ESP32_TFT_library"]
+	path = ESP32_TFT_library
+	url = https://github.com/ctag-fh-kiel/ESP32_TFT_library.git
+[submodule "esp-request"]
+	path = components/esp-request
+	url = https://github.com/ctag-fh-kiel/esp-request.git

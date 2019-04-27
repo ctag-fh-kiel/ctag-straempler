@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!-- convert to c header file with -->
+<!-- xxd -i -a index.html > ./include/index.html.h -->
+<!-- inspired by https://codepen.io/PerfectIsShit/pen/zogMXP -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <meta HTTP-EQUIV="Expires" CONTENT="-1">
+    <title>CTAG Strämpler Upload</title>
+</head>
+<body>
+    <h2>CTAG Strämpler custom file upload</h2>
+    <p>Note: Only 16 bit 44.1kHz raw stereo audio files work, create them for example with <a href="https://www.audacityteam.org/" target="_blank">Audacity...</a></p>
+    <form id="upload_form" enctype="multipart/form-data" method="put">
+        <table>
+                <tr>
+                    <td>
+                        <label for="filename">Filename (max. 8 chars):</label>
+                    </td>
+                    <td>
+                        <input type="text" name="filename" id="filename" maxlength="8" placeholder="Pad123"/>
+                    </td>
+                </tr>
+                <tr>
+                        <td>
+                            <label for="Description">Description (max. 128 chars):</label>
+                        </td>
+                        <td>
+                            <textarea name="description" id="description" maxlength="128" placeholder="Nice long pad"></textarea>
+                        </td>
+                    </tr>
+                <tr>
+                    <td>
+                            <label for="tags">Tags (max. 32 chars):</label>
+                    </td>
+                    <td>
+                            <input type="text" name="tags" id="tags" maxlength="32" placeholder="Lush, warm, long"/>
+                    </td>
+                </tr>
+                <tr>
+                        <td>
+                            <input type="file" name="file1" id="file1" onchange="setFileName()"/>
+                        </td>
+                </tr>
+                <tr>
+                        <td>
+                            <input type="button" id="upload_btn" onclick="uploadFile()" value="Upload"/>
+                        </td>
+                </tr>
+                <tr>
+                    <td>
+                        <progress id="progressBar" value="0" max="100" style="width:300px;"></progress>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                            <h3 id="status"></h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                            <p id="loaded_n_total"></p>
+                    </td>
+                </tr>
+        </table>
+    </form>
+    <script>
+
+    function _(el) {
+        return document.getElementById(el);
+    }
+
+    function setFileName(){
+        var file = _("file1").files[0].name;
+        console.log(file);
+        file = file.split(".");
+        file = file[0];
+        file = file.replace(" ", "_");
+        file = file.substring(0, 8);
+        _("filename").value = file;
+    }
+
+    function uploadFile() {
+        var file = _("file1").files[0];
+        console.log(file);
+        if(typeof file === 'undefined'){
+            _("status").innerHTML = "Set file first!";
+            return;
+        } 
+        // alert(file.name+" | "+file.size+" | "+file.type);
+        var formdata = new FormData();
+        formdata.append("file1", file);
+        var ajax = new XMLHttpRequest();
+        ajax.upload.addEventListener("progress", progressHandler, false);
+        ajax.addEventListener("load", completeHandler, false);
+        ajax.addEventListener("error", errorHandler, false);
+        ajax.addEventListener("abort", abortHandler, false);
+        ajax.open("PUT", "/drop_sample"); 
+        ajax.setRequestHeader("Content-Type", "audio/raw");
+        ajax.setRequestHeader("Name", _("filename").value);
+        ajax.setRequestHeader("Description", _("description").value);
+        ajax.setRequestHeader("Tags", _("tags").value);
+        ajax.send(formdata);
+    }
+
+    function progressHandler(event) {
+        _("loaded_n_total").innerHTML = "Uploaded " + event.loaded + " bytes of " + event.total;
+        var percent = (event.loaded / event.total) * 100;
+        _("progressBar").value = Math.round(percent);
+        _("status").innerHTML = Math.round(percent) + "% uploaded... please wait";
+    }
+
+    function completeHandler(event) {
+        _("status").innerHTML = event.target.responseText;
+        _("progressBar").value = 0; //will clear progress bar after successful upload
+        _("filename").value = "";
+        _("description").value = "";
+        _("tags").value = "";
+        _("file1").value = "";
+    }
+
+    function errorHandler(event) {
+        _("status").innerHTML = "Upload failed";
+    }
+
+    function abortHandler(event) {
+        _("status").innerHTML = "Upload aborted";
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+build/
+sdkconfig
+sdkconfig.old
+.DS_Store
+components/.DS_Store
+components/drivers/.DS_Store
