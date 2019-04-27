@@ -1,4 +1,7 @@
 # **CTAG Strämpler**
+
+![Strämpler harware UI](https://raw.githubusercontent.com/wiki/ctag-fh-kiel/ctag-straempler/img/straempler-boot.jpg)
+
 ## What it is:
 
 - Half streamer, half sampler, therefore called Strämpler (close to German word of Strampler meaning romper suit).
