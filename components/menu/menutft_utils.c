@@ -44,3 +44,15 @@ void menuTFTFlushMenuDataRect(){
     TFT_setclipwin(0,TFT_getfontheight()+9, _width-1, _height);
     TFT_fillWindow(TFT_BLACK);
 }
+
+int menuTFTGetCharPos(char* str, int pos){
+    char s [2] = "\0";
+    int x = 3, i = 0;                                 //3 pixel left margin
+    for(int i = 0; i < pos; i++)
+    {
+        s[0] = str[i];
+        x+= (TFT_getStringWidth(s) + 2);        //2 pixel spacing between characters
+        // ESP_LOGI("UI", "x: %d | added: %d", x, TFT_getStringWidth(s) + 2);
+    }
+    return x; 
+}

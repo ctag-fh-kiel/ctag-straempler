@@ -119,7 +119,6 @@ void writeJSONFile(const char *fileName, const char* data){
         fwrite(data, 1, len, fout);
 
         fclose(fout);
-        //printf("Written to: %s\n", fileName);
     }else{
         ESP_LOGE("FILEIO", "data is NULL");
     }

@@ -67,3 +67,11 @@ void menuTFTFlush(int multiplier, color_t* color);
  */
 void menuTFTFlushMenuDataRect();
 
+/**
+ * @brief Returns next character x position, used for input menu
+ * 
+ * @param str           pointer to input array
+ * @param pos           character position of current input value
+ * @return int          x position of next character
+ */
+int menuTFTGetCharPos(char* str, int pos);

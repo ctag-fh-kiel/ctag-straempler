@@ -173,12 +173,13 @@ static int settings_def_handler(int it_id, int event, void* event_data){
             selected = 0;
             menuTFTPrintMenu(settings_menus, &n_settings_menus);
             menuTFTSelectMenuItem(&menu_pos, 0, settings_menus, &n_settings_menus);
-            if(_state_json != NULL) cfgData = (cJSON*) _state_json;
+            if(_state_json != NULL)cfgData = (cJSON*) _state_json;  
             else cfgData = readJSONFileAsCJSON("/sdcard/CONFIG.JSN");
-
-            if(cfgData != NULL)settings = cJSON_GetObjectItemCaseSensitive(cfgData, "settings");
-            if(settings != NULL)menuTFTPrintSettings(settings);
-            menuTFTPrintTimezone(settings_menus, &n_settings_menus, &tz_shift);
+            if(cfgData != NULL){
+                settings = cJSON_GetObjectItemCaseSensitive(cfgData, "settings");
+                if(settings != NULL)menuTFTPrintSettings(settings);
+                menuTFTPrintTimezone(settings_menus, &n_settings_menus, &tz_shift);
+            }else ESP_LOGE("UI", "couldn't fetch cfgData from state or file");
             break;
         case EV_FWD:
             if(!selected){
@@ -219,7 +220,6 @@ static int settings_def_handler(int it_id, int event, void* event_data){
             //set token 
             char* token = cJSON_GetObjectItem(settings, "apikey")->valuestring;
             freesoundSetToken(token);
-            
             //if wifi settings changed reconnect wifi with new config
             if(wifiChanged){
                 ESP_LOGI("UI", "Wifi settings have changed. Reconnecting...");
@@ -260,6 +260,7 @@ static int settings_input_def_handler(int it_id, int event, void* event_data){
             pos = 0;
             c = 41;
             menu_pos = 0;
+            menuTFTResetTextWrap();
             //Get settings object from _state_json & menu_pos from _state_data
             if(_state_json != NULL){
                 root = (cJSON*) _state_json;
@@ -277,15 +278,14 @@ static int settings_input_def_handler(int it_id, int event, void* event_data){
         case EV_FWD:
             c++;
             if(c>43) c = 43;
-            menuTFTPrintCharSettings(c_list[c], pos, PRINT_NORM);
+            menuTFTPrintChar(input, pos, c_list[c], PRINT_NORM);
             break;
         case EV_BWD:
             c--;
             if(c<0)c=0;
-            menuTFTPrintCharSettings(c_list[c], pos, PRINT_NORM);
+            menuTFTPrintChar(input, pos, c_list[c], PRINT_NORM);
             break;
         case EV_SHORT_PRESS:
-        
             switch(c_list[c]){
                 case '^':
                     _state_data = NULL;
@@ -296,7 +296,7 @@ static int settings_input_def_handler(int it_id, int event, void* event_data){
                     input[pos] = '\0';
                     pos--;
                     if(pos<0)pos=0;
-                    menuTFTPrintCharSettings(c_list[c], pos, PRINT_NORM);
+                    menuTFTPrintChar(input, pos, c_list[c], PRINT_NORM);
                     break;
                 case '=':
                     if(pos == 0) break;
@@ -305,7 +305,6 @@ static int settings_input_def_handler(int it_id, int event, void* event_data){
                     strcpy(buf, input);
                     cJSON* val = cJSON_GetArrayItem(settings, menu_pos);
                     cJSON_ReplaceItemInObjectCaseSensitive(settings, val->string, cJSON_CreateString(buf));
-                    // printf("%s\n", cJSON_Print(root));
                     _state_data = NULL;
                     pos = 0;
                     return M_SETTINGS;
@@ -318,8 +317,7 @@ static int settings_input_def_handler(int it_id, int event, void* event_data){
                     }else{
                         if(pos>32)pos=32;
                     }
-                    
-                    menuTFTPrintCharSettings(c_list[c], pos, PRINT_NORM);
+                    menuTFTPrintChar(input, pos, c_list[c], PRINT_NORM);
                     break;
             }
             break;
@@ -327,15 +325,14 @@ static int settings_input_def_handler(int it_id, int event, void* event_data){
             //print current char
             if(c_list[c] == '^' || c_list[c] == '<') break;
             input[pos] = toupper(c_list[c]);
-            menuTFTPrintCharSettings(c_list[c], pos, PRINT_UPPER);
+            menuTFTPrintChar(input, pos, c_list[c], PRINT_UPPER);
             pos++;
             if(menu_pos == 2){
                 if(pos>42)pos=42;
             }else{
                 if(pos>32)pos=32;
             }
-            //print next char if pos limit not reached
-            menuTFTPrintCharSettings(c_list[c], pos, PRINT_NORM);
+            menuTFTPrintChar(input, pos, c_list[c], PRINT_NORM);
             break;
         default:
             break;
@@ -1462,16 +1459,16 @@ static int browse_id_def_handler(int it_id, int event, void* event_data){
             pos = 0;
             c = 1;
             menuTFTPrintSelectIDMenu();
-            menuTFTPrintChar(c_list[c], pos);
+            menuTFTPrintChar(num_s, pos, c_list[c], PRINT_NORM);
         case EV_FWD:
             c++;
             if(c>11)c=11;
-            menuTFTPrintChar(c_list[c], pos);
+            menuTFTPrintChar(num_s, pos, c_list[c], PRINT_NORM);
             break;
         case EV_BWD:
             c--;
             if(c<0)c=0;
-            menuTFTPrintChar(c_list[c], pos);
+            menuTFTPrintChar(num_s, pos, c_list[c], PRINT_NORM);
             break;
         case EV_SHORT_PRESS:
             switch(c_list[c]){
@@ -1479,7 +1476,7 @@ static int browse_id_def_handler(int it_id, int event, void* event_data){
                     num_s[pos] = '\0';
                     pos--;
                     if(pos<0)pos=0;
-                    menuTFTPrintChar(c_list[c], pos);
+                    menuTFTPrintChar(num_s, pos, c_list[c], PRINT_NORM);
                     break;
                 case '=':
                     if(pos == 0) break;
@@ -1493,7 +1490,7 @@ static int browse_id_def_handler(int it_id, int event, void* event_data){
                     num_s[pos] = c_list[c];
                     pos++;
                     if(pos>10)pos=10;
-                    menuTFTPrintChar(c_list[c], pos);
+                    menuTFTPrintChar(num_s, pos, c_list[c], PRINT_NORM);
                     break;
             }
             break;
@@ -1713,6 +1710,7 @@ static int presets_menu_def_handler(int it_id, int event, void* event_data){
                 menu_state_current = 0;
                 list_pos = 0;
                 cJSON_Delete(root);
+                _state_json = NULL;
                 root = NULL;
                 bank = NULL;
                 menuTFTFlushMenuDataRect();
@@ -1855,6 +1853,7 @@ static int banks_menu_def_handler(int it_id, int event, void* event_data){
                 list_pos = 0;
                 if(file_list != NULL)list_free(file_list);
                 file_list = NULL;
+                _state_data = NULL;
                 menuTFTFlushMenuDataRect();
                 return M_PRESET;
             }else{
@@ -1889,6 +1888,7 @@ static int preset_new_def_handler(int it_id, int event, void* event_data){
             bzero(name, 12);
             pos = 0;
             c = 1;
+            menuTFTResetTextWrap();
             if(_state_json != NULL){
                 root = (cJSON*) _state_json;
                 bank = cJSON_GetObjectItemCaseSensitive(root, "bank");
@@ -1898,12 +1898,12 @@ static int preset_new_def_handler(int it_id, int event, void* event_data){
         case EV_FWD:
             c++;
             if(c>37) c = 37;
-            menuTFTPrintChar(c_list[c], pos);
+            menuTFTPrintChar(name, pos, c_list[c], PRINT_NORM);
             break;
         case EV_BWD:
             c--;
             if(c<0)c=0;
-            menuTFTPrintChar(c_list[c], pos);
+            menuTFTPrintChar(name, pos, c_list[c], PRINT_NORM);
             break;
         case EV_SHORT_PRESS:
             switch(c_list[c]){
@@ -1911,7 +1911,7 @@ static int preset_new_def_handler(int it_id, int event, void* event_data){
                     name[pos] = '\0';
                     pos--;
                     if(pos<0)pos=0;
-                    menuTFTPrintChar(c_list[c], pos);
+                    menuTFTPrintChar(name, pos, c_list[c], PRINT_NORM);
                     break;
                 case '=':
                     if(pos == 0) break;
@@ -1919,7 +1919,6 @@ static int preset_new_def_handler(int it_id, int event, void* event_data){
                     buf = calloc(strlen(name) + 1, 1);
                     strcpy(buf, name);
                     strcpy(current_preset_name, name);
-
                     //Check if input is valid -> preset with same name already exists
                     if(bank != NULL && cJSON_GetArraySize(bank) < MAX_PRESET_COUNT){
                         if(validatePresetNameInput(buf, bank)){
@@ -1942,7 +1941,7 @@ static int preset_new_def_handler(int it_id, int event, void* event_data){
                     name[pos] = c_list[c];
                     pos++;
                     if(pos>12)pos=12;
-                    menuTFTPrintChar(c_list[c], pos);
+                    menuTFTPrintChar(name, pos, c_list[c], PRINT_NORM);
                     break;
             }
             break;
@@ -1970,17 +1969,18 @@ static int preset_bank_new_def_handler(int it_id, int event, void* event_data){
             bzero(name, 10);
             pos = 0;
             c = 1;
+            menuTFTResetTextWrap();
             file_list = (list_t*) _state_data;
             menuTFTPrintInputMenu("Enter bank name:");
         case EV_FWD:
             c++;
             if(c>37) c = 37;
-            menuTFTPrintChar(c_list[c], pos);
+            menuTFTPrintChar(name, pos, c_list[c], PRINT_NORM);
             break;
         case EV_BWD:
             c--;
             if(c<0)c=0;
-            menuTFTPrintChar(c_list[c], pos);
+            menuTFTPrintChar(name, pos, c_list[c], PRINT_NORM);
             break;
         case EV_SHORT_PRESS:
             switch(c_list[c]){
@@ -1988,7 +1988,7 @@ static int preset_bank_new_def_handler(int it_id, int event, void* event_data){
                     name[pos] = '\0';
                     pos--;
                     if(pos<0)pos=0;
-                    menuTFTPrintChar(c_list[c], pos);
+                    menuTFTPrintChar(name, pos, c_list[c], PRINT_NORM);
                     break;
                 case '=':
                     if(pos == 0) break;
@@ -2024,7 +2024,7 @@ static int preset_bank_new_def_handler(int it_id, int event, void* event_data){
                     name[pos] = c_list[c];
                     pos++;
                     if(pos>8)pos=8;
-                    menuTFTPrintChar(c_list[c], pos);
+                    menuTFTPrintChar(name, pos, c_list[c], PRINT_NORM);
                     break;
             }
             break;
@@ -2419,7 +2419,7 @@ void loadParams(cJSON* preset){
     //ESP_LOGI("UI", "Successfully loaded preset data");
 }
 
-void initParamsFromPreset(const char* presetName, const char* bankName){
+static void initParamsFromPreset(char* presetName, char* bankName){
     cJSON *root = NULL, *bank = NULL, *preset = NULL;
     if(strcasecmp(bankName, "") == 0){    
         //bankName is empty, get first available bank and load preset at index 0        

@@ -14,26 +14,19 @@
 #include "list.h"
 #include "freertos/timers.h"
 
-
-
-
 //definitions for element highlighting and selection
 int _cur_row = 0, _cur_el = -1;
 list_t *_bbox_list = NULL;
 
-
-
-
 //definitions for general menu elements
 static uint16_t loopMarker[3]; 
 static uint16_t prevLoopMarker[3];
+static int16_t twrap = 0;
+static int16_t wrap_pos = 0;
 
 static vec2d_t adsrStartPoint;
 static vec2d_t curAdsrPoints[4];
 static vec2d_t prevAdsrPoints[4];
-
-
-
 
 
 //Menu printing functions
@@ -1380,7 +1373,8 @@ int menuTFTHighlightPrevEl(){
     return _cur_el;
 }
 
-void menuTFTPrintChar(char c, int pos){
+void menuTFTPrintCharFix(char c, int pos){
+    //printing with fixed space of 14px
     _fg = TFT_WHITE;
     _bg = TFT_BLACK;
     TFT_X = 3 + pos * 14;
@@ -1396,35 +1390,43 @@ void menuTFTPrintChar(char c, int pos){
     cfont = f;
 }
 
-void menuTFTPrintCharSettings(char c, int pos, print_ids_t id){
+void menuTFTPrintChar(char* str, int pos, char c, print_ids_t id){
     _fg = TFT_WHITE;
     _bg = TFT_BLACK;
-    TFT_X = 3 + pos * 14;
-    char s[2] = "\0";
-    if(id == PRINT_UPPER && isalpha(c) != 0) s[0] = toupper(c);
-    else s[0] = c;
-    int y = 8 + TFT_getfontheight(), x = 0;
+    char s[2] = "\0";       
+    int x = 0, w = 20, y =  8 + TFT_getfontheight();
+    //Check if char should be printed in upper case
+    s[0] = (id == PRINT_UPPER && isalpha(c) != 0) ? toupper(c) : c;
+    //Set font
     Font f = cfont;
-    //ESP_LOGI("UI", "POS: %d | strlen token : %d | char: %c", pos, strlen(CONFIG_FREESOUND_TOKEN), s[0]);
-    if(pos >= 22){
-        TFT_X = 3 + (pos - 22) * 14;
-        y = (8 + TFT_getfontheight()) * 2;
-    }
     TFT_setFont(UBUNTU16_FONT, NULL);
-    if(pos == 21) TFT_fillRect(3, y*2, 14, TFT_getfontheight(), _bg);  
-    TFT_fillRect(TFT_X, y, 14, TFT_getfontheight(), _bg);                       //flush previous char
-    TFT_print(s, TFT_X, y);                                                     //print new char
-    TFT_fillRect(TFT_X, y, 14, TFT_getfontheight(), _bg);    
+    //Get x position for char
+    x = menuTFTGetCharPos(str, pos);
+    //Check if text is wrapped
+    if(x >= _width - 12){
+        if(!twrap){
+            twrap = 1;
+            wrap_pos = x;
+        }
+        TFT_X = 3 + x - wrap_pos;
+        y *= 2;
+    }else{
+        TFT_X = x;
+        TFT_fillRect(0, y*2, w, TFT_getfontheight(), _bg); 
+        twrap = wrap_pos = 0;
+    }
+    //print
+    TFT_fillRect(TFT_X, y, w, TFT_getfontheight(), _bg);    //clear previous 
+    TFT_print(s, TFT_X, y);
+    TFT_fillRect(TFT_X + 2, y, w, TFT_getfontheight(), _bg);    //clear everything to right of char
     cfont = f;
 }
 
-int menuTFTPrintAllCharSettings(const char* s){
-    int sz = strlen(s);
+int menuTFTPrintAllCharSettings(char* str){
+    int sz = strlen(str);
     int i = 0;
     for(; i < sz; i++)
-    {
-        menuTFTPrintCharSettings(s[i], i, PRINT_NORM);
-    }
+        menuTFTPrintChar(str, i, str[i], PRINT_NORM);
     return i;
 }
 
@@ -1571,5 +1573,10 @@ void menuTFTClearListItem(int* activeSlot){
     }            
         
     TFT_fillRect(x, y_draw - 4, x_incr-1, TFT_getfontheight() + 4, _bg);     
+}
+
+void menuTFTResetTextWrap(){
+    twrap = 0;
+    wrap_pos = 0;
 }
 //-------------------------------------------------------------------------------------------------------

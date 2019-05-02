@@ -71,9 +71,9 @@ void menuTFTUpdateProgress(char *text, int progress);
 void menuTFTPrintBrowseTagList(list_t*);
 int menuTFTHighlightNextEl();
 int menuTFTHighlightPrevEl();
-void menuTFTPrintChar(char, int);
-void menuTFTPrintCharSettings(char, int, print_ids_t);
-int menuTFTPrintAllCharSettings(const char*);
+void menuTFTPrintCharFix(char, int);
+void menuTFTPrintChar(char* str, int pos, char c, print_ids_t id);
+int menuTFTPrintAllCharSettings(char*);
 void menuTFTPrintFileBrowser(int currentFile, int maxFiles, const cJSON* desc);
 void menuTFTPrintDecoding();
 void menuTFTAnimateFileBrowser(const cJSON* desc);
@@ -82,6 +82,4 @@ int printTags(list_item_t* it);
 void menuTFTUpdatePlayState();
 void menuTFTPrintInputError(char*);
 void menuTFTClearListItem(int* activeSlot);
-
-
-
+void menuTFTResetTextWrap();

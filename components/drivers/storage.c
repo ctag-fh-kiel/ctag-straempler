@@ -99,9 +99,9 @@ void mountSDStorage(){
 
     // check of config file exists, if not, create
     if (stat("/sdcard/CONFIG.JSN", &st) == -1) {
-        createConfigFile();
+        createConfigFile(); 
     }
-     
+    
     // check if default preset bank file exists, if not, create
     if (stat("/sdcard/banks/default.JSN", &st) == -1) {
         initBank("/sdcard/banks/default.JSN");

@@ -1148,58 +1148,63 @@ void assignAudioFiles()
 {
     //ESP_LOGI("AUDIO", "Assigning slot id audio files");
     cJSON *cfgData = readJSONFileAsCJSON("/sdcard/CONFIG.JSN");
-    cJSON *slots = cJSON_GetObjectItem(cfgData, "slots");
-    cJSON *fileObj;
-    FRESULT fr;
-    // critical section re-assigning audio file slots
-    for (int i = 0; i < 2; i++)
-    {
-        fileObj = cJSON_GetArrayItem(slots, i);
-        //ESP_LOGE("FILE", "File %s", cJSON_GetObjectItemCaseSensitive(fileObj, "file")->valuestring);
-        char *filename = cJSON_GetObjectItemCaseSensitive(fileObj, "file")->valuestring;
-        xSemaphoreTake(file_mutex[i], portMAX_DELAY);
-        if (strcmp(audio_files[i].fname, filename) != 0) // new file to be assigned
-        {
-            // close file 
-            f_close(&audio_files[i].fil);
-
-            // open file 
-            strcpy(audio_files[i].fname, filename);
-            fr = f_open(&audio_files[i].fil, audio_files[i].fname, FA_READ);
-            if (fr)
+    if(cfgData != NULL){
+        cJSON *slots = cJSON_GetObjectItem(cfgData, "slots");
+        if(slots != NULL){
+            cJSON *fileObj;
+            FRESULT fr;
+            // critical section re-assigning audio file slots
+            for (int i = 0; i < 2; i++)
             {
-                ESP_LOGE("AUDIO", "Error opening file %s", audio_files[i].fname);
-                abort();
+                fileObj = cJSON_GetArrayItem(slots, i);
+                //ESP_LOGE("FILE", "File %s", cJSON_GetObjectItemCaseSensitive(fileObj, "file")->valuestring);
+                char *filename = cJSON_GetObjectItemCaseSensitive(fileObj, "file")->valuestring;
+                if(strcmp(filename, "") != 0){
+                    xSemaphoreTake(file_mutex[i], portMAX_DELAY);
+                    if (strcmp(audio_files[i].fname, filename) != 0) // new file to be assigned
+                    {
+                        // close file 
+                        f_close(&audio_files[i].fil);
+
+                        // open file 
+                        strcpy(audio_files[i].fname, filename);
+                        fr = f_open(&audio_files[i].fil, audio_files[i].fname, FA_READ);
+                        if (fr)
+                        {
+                            ESP_LOGE("AUDIO", "Error opening file %s", audio_files[i].fname);
+                            abort();
+                        }
+
+                        // enable fastseek on file
+                        audio_files[i].fil.cltbl = audio_files[i].clmt;
+                        audio_files[i].fil.cltbl[0] = SZ_TBL;
+                        fr = f_lseek(&audio_files[i].fil, CREATE_LINKMAP);
+                        if (fr)
+                            ESP_LOGE("AUDIO", "Creating linkmap table for fatfs fileseek not successful!");
+
+                        // set correct initial read positions
+                        audio_files[i].fsize = (uint32_t)f_size(&audio_files[i].fil);
+                        //ESP_LOGI("AUDIO", "Voice %d Filesize %d", i, audio_files[i].fsize);
+                        voice[i].playback_engine.loop_end = audio_files[i].fsize;
+                        if (voice[i].playback_engine.is_playback_direction_forward)
+                        {
+                            audio_files[i].fpos = 0;
+                            f_lseek(&audio_files[i].fil, 0);
+                        }
+                        else
+                        {
+                            audio_files[i].fpos = voice[i].playback_engine.loop_end;
+                            f_lseek(&audio_files[i].fil, audio_files[i].fsize);
+                        }
+
+                        fill_audio_buffer(&voice[i].playback_engine, &audio_buffers[i * 3], &audio_files[i], NULL);
+                    }
+                    xSemaphoreGive(file_mutex[i]);
+                }else ESP_LOGE("AUDIO", "Couldn't assign audio file due to slot being empty");
             }
-
-            // enable fastseek on file
-            audio_files[i].fil.cltbl = audio_files[i].clmt;
-            audio_files[i].fil.cltbl[0] = SZ_TBL;
-            fr = f_lseek(&audio_files[i].fil, CREATE_LINKMAP);
-            if (fr)
-                ESP_LOGE("AUDIO", "Creating linkmap table for fatfs fileseek not successful!");
-
-            // set correct initial read positions
-            audio_files[i].fsize = (uint32_t)f_size(&audio_files[i].fil);
-            //ESP_LOGI("AUDIO", "Voice %d Filesize %d", i, audio_files[i].fsize);
-            voice[i].playback_engine.loop_end = audio_files[i].fsize;
-            if (voice[i].playback_engine.is_playback_direction_forward)
-            {
-                audio_files[i].fpos = 0;
-                f_lseek(&audio_files[i].fil, 0);
-            }
-            else
-            {
-                audio_files[i].fpos = voice[i].playback_engine.loop_end;
-                f_lseek(&audio_files[i].fil, audio_files[i].fsize);
-            }
-
-            fill_audio_buffer(&voice[i].playback_engine, &audio_buffers[i * 3], &audio_files[i], NULL);
-        }
-        xSemaphoreGive(file_mutex[i]);
-    }
-    // end critical section
-
+            // end critical section
+        }else ESP_LOGE("AUDIO", "Couldn't fetch slots from config");
+    }else ESP_LOGE("AUDIO", "Couldn't open config.jsn");
     cJSON_Delete(cfgData);
 }
 

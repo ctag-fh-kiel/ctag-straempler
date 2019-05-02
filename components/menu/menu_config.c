@@ -2,6 +2,7 @@
 #include "string.h"
 #include "fileio.h"
 #include "esp_log.h"
+#include <stdio.h>
 
 void initTimeshift(int *tz_shift){
     cJSON *root = NULL, *settings = NULL, *val = NULL;
@@ -25,16 +26,18 @@ int wifiSettingsChanged(cJSON* curSettings){
         cJSON_ArrayForEach(element, settings){
             if(cJSON_IsString(element) && element != NULL){
                 val = cJSON_GetArrayItem(curSettings, i);
-                if(strcmp(element->string, "ssid") == 0 || strcmp(element->string, "passwd") == 0){
-                    if(strcmp(element->valuestring, val->valuestring) != 0){
-                        cJSON_Delete(root);
-                        return 1;
+                if(val != NULL){
+                    if(strcmp(element->string, "ssid") == 0 || strcmp(element->string, "passwd") == 0){
+                        if(strcmp(element->valuestring, val->valuestring) != 0){
+                            cJSON_Delete(root);
+                            return 1;
+                        }
                     }
                 }
                 i++;
             }
         }
-    }else ESP_LOGE("MENU", "Error loading tz_shift from config");
+    }
     cJSON_Delete(root);
     return 0;
 }
