@@ -14,8 +14,10 @@
 #include "cJSON.h"
 #include "storage.h"
 #include "preset.h"
+#include "menu_config.h"
 
 static void createConfigFile(){
+    ESP_LOGI("SD", "Creating config file");
     cJSON *root = cJSON_CreateObject();
     cJSON *array = cJSON_CreateArray();
     cJSON *val = NULL;
@@ -97,8 +99,9 @@ void mountSDStorage(){
         mkdir("/sdcard/usr", 0777);
     }
 
-    // check of config file exists, if not, create
-    if (stat("/sdcard/CONFIG.JSN", &st) == -1) {
+    // check if config file exists & has valid structure, else create/rewrite
+    if (stat("/sdcard/CONFIG.JSN", &st) == -1 || validateConfig() == -1) {
+        ESP_LOGE("SD", "Config not found/invalid");
         createConfigFile(); 
     }
     

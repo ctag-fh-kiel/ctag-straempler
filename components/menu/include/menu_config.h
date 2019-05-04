@@ -32,3 +32,10 @@ void savePresetConfig(char* preset, char* bank);
  * @param bank          name of current bank
  */
 void loadPresetConfig(char* bankName, char* presetName);
+
+/**
+ * @brief               validates if config file has correct structure and formatting
+ * 
+ * @return int          returns -1 if not valid, else 1
+ */
+int validateConfig();

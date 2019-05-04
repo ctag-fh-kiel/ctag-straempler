@@ -2254,10 +2254,6 @@ cJSON* buildPreset(const char* name){
         cJSON_AddItemToObject(matrixObject, "destination", val);  
         cJSON_AddItemToArray(modMatrixArray, matrixObject);
     }
-
-    //printf("%s\n", cJSON_Print(preset));
-
-    //ESP_LOGI("PRESET", "Successfully build preset.");
     return preset;
 }
 

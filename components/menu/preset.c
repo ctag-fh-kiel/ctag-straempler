@@ -136,7 +136,6 @@ void initBank(char* fileName){
         cJSON_AddItemToArray(modMatrixArray, matrixObject);
     }
 
-    //printf("%s\n", cJSON_Print(root));
     char* s = cJSON_PrintUnformatted(root);
     writeJSONFile(fileName, s);
     free(s);
@@ -176,10 +175,8 @@ cJSON* getPresetByName(const char* presetName, cJSON* root){
     cJSON_ArrayForEach(element, bank){
         if(cJSON_IsObject(element) && element != NULL){
             val = cJSON_GetObjectItemCaseSensitive(element, "presetName");
-            //printf("PRESET: Element - child - string %s", element->child->valuestring);
             sprintf(buf, val->valuestring);
             if(strcmp(buf, presetName) == 0){
-                //ESP_LOGI("PRESET", "Found preset: %s, returning...", presetName);
                 return cJSON_DetachItemFromArray(bank, i);
             }
             memset(buf, 0, 12);
