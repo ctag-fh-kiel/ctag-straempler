@@ -1163,8 +1163,21 @@ void assignAudioFiles()
                     xSemaphoreTake(file_mutex[i], portMAX_DELAY);
                     if (strcmp(audio_files[i].fname, filename) != 0) // new file to be assigned
                     {
+                        float ui_sample_start = 0.0f, ui_loop_start = 0.0f, ui_loop_end = 1.0f;
+
+                        // calculate percentage ui values
+                        if(audio_files[i].fsize > 0){
+                            ui_sample_start = voice[i].playback_engine.sample_start / (float) audio_files[i].fsize;
+                            ui_loop_start = voice[i].playback_engine.loop_start / (float) audio_files[i].fsize;
+                            ui_loop_end = voice[i].playback_engine.loop_end / (float) audio_files[i].fsize;
+                        }
+                        
+
+
                         // close file 
                         f_close(&audio_files[i].fil);
+
+                        
 
                         // open file 
                         strcpy(audio_files[i].fname, filename);
@@ -1174,6 +1187,7 @@ void assignAudioFiles()
                             ESP_LOGE("AUDIO", "Error opening file %s", audio_files[i].fname);
                             abort();
                         }
+                        
 
                         // enable fastseek on file
                         audio_files[i].fil.cltbl = audio_files[i].clmt;
@@ -1196,8 +1210,21 @@ void assignAudioFiles()
                             audio_files[i].fpos = voice[i].playback_engine.loop_end;
                             f_lseek(&audio_files[i].fil, audio_files[i].fsize);
                         }
-
+                        
                         fill_audio_buffer(&voice[i].playback_engine, &audio_buffers[i * 3], &audio_files[i], NULL);
+                        //calculate new values for sample start, loop start, loop end
+                        uint32_t sample_start = (ui_sample_start * audio_files[i].fsize / 4);
+                        sample_start *= 4;
+                        voice[i].playback_engine.sample_start = sample_start;
+
+                        uint32_t loop_start = (ui_loop_start * audio_files[i].fsize / 4);
+                        loop_start *= 4;
+                        voice[i].playback_engine.loop_start = loop_start;
+
+                        uint32_t loop_end = (ui_loop_end * audio_files[i].fsize / 4);
+                        loop_end *= 4;
+                        voice[i].playback_engine.loop_end = loop_end;
+
                     }
                     xSemaphoreGive(file_mutex[i]);
                 }else ESP_LOGE("AUDIO", "Couldn't assign audio file due to slot being empty");
