@@ -67,8 +67,8 @@
     - The software is built using [Espressif IDF](https://esp-idf.readthedocs.io) using the C programming language. Intermediate knowledge of C is required to understand the code. Furthermore, some basic DSP algorithms are applied. A DSP newbie, however, could take the project to really get rolling and build up on DSP capabilities. CTAG Strämpler is ideal to try out and play with your own DSP algorithms.
 - The [Espressif ESP32](https://en.wikipedia.org/wiki/ESP32) platform used for CTAG Strämpler is, with regard to its computational power and I/O capabilities, hard at its limit. We're squeezing the platform here and are already surprised, what one can get out of $5 chip in the year 2019. Surely, other DSPs / microcontrollers could do a better job, but do they allow for internet of things as easily?
 
-## How to get started:
-See the [Wiki pages](https://github.com/ctag-fh-kiel/ctag-straempler/wiki) of this project.
+## How to get started / build instructions / user manual:
+See the [Wiki pages](https://github.com/ctag-fh-kiel/ctag-straempler/wiki) of this project; where in particular [**build instructions**](https://github.com/ctag-fh-kiel/ctag-straempler/wiki/GettingStarted) can be found.
 
 ## Links
 - [Demonstration videos on YouTube](https://youtu.be/zmj8tKPHV8g).
