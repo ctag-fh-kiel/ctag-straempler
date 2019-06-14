@@ -32,7 +32,7 @@ void fill_buffer_one_shot(void* _playback_engine, void* _buffer, void* _file){
         }
         else
         {
-            //f_lseek(&(file->fil), file->fpos);
+            f_lseek(&(file->fil), file->fpos);
             f_read(&(file->fil), buffer->buf, samps_to_read, &n);
             file->fpos += n;
         }
