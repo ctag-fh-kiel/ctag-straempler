@@ -1185,9 +1185,9 @@ void assignAudioFiles()
                         if (fr)
                         {
                             ESP_LOGE("AUDIO", "Error opening file %s", audio_files[i].fname);
+                            repairAudioFileAssigment(i);
                             abort();
                         }
-                        
 
                         // enable fastseek on file
                         audio_files[i].fil.cltbl = audio_files[i].clmt;

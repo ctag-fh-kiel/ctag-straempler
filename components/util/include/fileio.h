@@ -65,3 +65,16 @@ int deleteFile(const char* file);
  * @param c 
  */
 void printHeapInfo(const char* c);
+
+/**
+ * @brief Checks structure of SD card, data folders and cfg files
+ * 
+ */
+void checkSDStructure();
+
+/**
+ * @brief Repairs config json file and erases file in doubt if it exists
+ * 
+ * @param id -> voice id
+ */
+void repairAudioFileAssigment(int id);

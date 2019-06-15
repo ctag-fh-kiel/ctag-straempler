@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include "preset.h"
+#include "menu_config.h"
 #include "esp_log.h"
 #include "errno.h"
 #include "esp_system.h"
@@ -15,6 +17,119 @@ static int print_list_elements(list_item_t* it){
     return 0;
 }
 */
+
+static void createConfigFile(){
+    ESP_LOGI("SD", "Creating config file");
+    cJSON *root = cJSON_CreateObject();
+    cJSON *array = cJSON_CreateArray();
+    cJSON *val = NULL;
+    int i;
+    for(i=0; i<2; i++){
+        cJSON *obj = cJSON_CreateObject();
+        val = cJSON_CreateString("");
+        cJSON_AddItemToObject(obj, "name", val);
+        val = cJSON_CreateString("");
+        cJSON_AddItemToObject(obj, "file", val);
+        cJSON_AddItemToArray(array, obj);
+    }
+    cJSON_AddItemToObject(root, "slots", array);
+    cJSON* settings = cJSON_CreateObject();
+    val = cJSON_CreateString("myssid");
+    cJSON_AddItemToObject(settings, "ssid", val);
+    val = cJSON_CreateString("mypasswd");
+    cJSON_AddItemToObject(settings, "passwd", val);
+    val = cJSON_CreateString("myapikey");
+    cJSON_AddItemToObject(settings, "apikey", val);
+    val = cJSON_CreateNumber(0);
+    cJSON_AddItemToObject(settings, "tz_shift", val);
+    val = cJSON_CreateString("");
+    cJSON_AddItemToObject(settings, "preset", val);
+    val = cJSON_CreateString("");
+    cJSON_AddItemToObject(settings, "bank", val);
+    cJSON_AddItemToObject(root, "settings", settings);
+    writeJSONFile("/sdcard/CONFIG.JSN", cJSON_Print(root));
+    cJSON_Delete(root);
+}
+
+void checkSDStructure(){
+    // check if directory structure exists, if not, create
+    struct stat st = {0};
+    if (stat("/sdcard/pool", &st) == -1) {
+        mkdir("/sdcard/pool", 0777);
+    }
+
+    if (stat("/sdcard/raw", &st) == -1) {
+        mkdir("/sdcard/raw", 0777);
+    }
+
+    if (stat("/sdcard/banks", &st) == -1) {
+        mkdir("/sdcard/banks", 0777);
+    }
+
+    if (stat("/sdcard/usr", &st) == -1) {
+        mkdir("/sdcard/usr", 0777);
+    }
+
+    // check if config file exists & has valid structure, else create/rewrite
+    if (stat("/sdcard/CONFIG.JSN", &st) == -1 || validateConfig() == -1) {
+        ESP_LOGE("SD", "Config not found/invalid");
+        createConfigFile(); 
+    }
+    
+    // check if default preset bank file exists, if not, create
+    if (stat("/sdcard/banks/default.JSN", &st) == -1) {
+        initBank("/sdcard/banks/default.JSN");
+    }
+}
+
+void repairAudioFileAssigment(int id){
+    cJSON* cfgData = readJSONFileAsCJSON("/sdcard/CONFIG.JSN");
+    cJSON *slots = cJSON_GetObjectItem(cfgData, "slots");
+    cJSON *fileObj = cJSON_GetArrayItem(slots, id);
+    char *name = cJSON_GetObjectItemCaseSensitive(fileObj, "name")->valuestring;
+    char filename[128];
+    struct stat st = {0};
+    // clean up all file in doubt
+    // check if raw file exists
+    snprintf(filename, 128, "/sdcard/RAW/%s.RAW", name);
+    if (stat(filename, &st) == -1){
+        ESP_LOGE("SD repair", "Audio raw file %s not found", filename);
+    }else{
+        remove(filename);
+    }
+    // check if mp3 file exists
+    snprintf(filename, 128, "/sdcard/POOL/%s.MP3", name);
+    if (stat(filename, &st) == -1){
+        ESP_LOGE("SD repair", "Audio mp3 file %s not found", filename);
+    }else{
+        remove(filename);
+    }
+    // check if descriptor file exists
+    snprintf(filename, 128, "/sdcard/POOL/%s.JSN", name);
+    if (stat(filename, &st) == -1){
+        ESP_LOGE("SD repair", "Audio jsn file %s not found", filename);
+    }else{
+        remove(filename);
+    }
+    // check if user file exists
+    snprintf(filename, 128, "/sdcard/USR/%s.RAW", name);
+    if (stat(filename, &st) == -1){
+        ESP_LOGE("SD repair", "Audio usr file %s not found", filename);
+    }else{
+        remove(filename);
+    }
+    // check if user file descriptor exists
+    snprintf(filename, 128, "/sdcard/USR/%s.JSN", name);
+    if (stat(filename, &st) == -1){
+        ESP_LOGE("SD repair", "Audio usr file %s not found", filename);
+    }else{
+        remove(filename);
+    }
+    // set file name config to empty string
+    cJSON_ReplaceItemInObjectCaseSensitive(fileObj, "name", cJSON_CreateString(""));
+    cJSON_ReplaceItemInObjectCaseSensitive(fileObj, "file", cJSON_CreateString(""));
+    writeJSONFile("/sdcard/CONFIG.JSN", cJSON_Print(cfgData));
+}
 
 void printHeapInfo(const char* c){
     printf("%s Free external Heap - %d\n", c, heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
@@ -158,3 +273,6 @@ int deleteFile(const char* file){
     }
     return 0;  
 }
+
+
+

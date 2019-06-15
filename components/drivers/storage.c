@@ -12,42 +12,6 @@
 #include "sdmmc_cmd.h"
 #include "fileio.h"
 #include "cJSON.h"
-#include "storage.h"
-#include "preset.h"
-#include "menu_config.h"
-
-static void createConfigFile(){
-    ESP_LOGI("SD", "Creating config file");
-    cJSON *root = cJSON_CreateObject();
-    cJSON *array = cJSON_CreateArray();
-    cJSON *val = NULL;
-    int i;
-    for(i=0; i<2; i++){
-        cJSON *obj = cJSON_CreateObject();
-        val = cJSON_CreateString("");
-        cJSON_AddItemToObject(obj, "name", val);
-        val = cJSON_CreateString("");
-        cJSON_AddItemToObject(obj, "file", val);
-        cJSON_AddItemToArray(array, obj);
-    }
-    cJSON_AddItemToObject(root, "slots", array);
-    cJSON* settings = cJSON_CreateObject();
-    val = cJSON_CreateString("myssid");
-    cJSON_AddItemToObject(settings, "ssid", val);
-    val = cJSON_CreateString("mypasswd");
-    cJSON_AddItemToObject(settings, "passwd", val);
-    val = cJSON_CreateString("myapikey");
-    cJSON_AddItemToObject(settings, "apikey", val);
-    val = cJSON_CreateNumber(0);
-    cJSON_AddItemToObject(settings, "tz_shift", val);
-    val = cJSON_CreateString("");
-    cJSON_AddItemToObject(settings, "preset", val);
-    val = cJSON_CreateString("");
-    cJSON_AddItemToObject(settings, "bank", val);
-    cJSON_AddItemToObject(root, "settings", settings);
-    writeJSONFile("/sdcard/CONFIG.JSN", cJSON_Print(root));
-    cJSON_Delete(root);
-}
 
 void mountSDStorage(){
     ESP_LOGI("SD", "Initializing SD card");
@@ -80,35 +44,7 @@ void mountSDStorage(){
         return;
     }
 
-
-    // check if directory structure exists, if not, create
-    struct stat st = {0};
-    if (stat("/sdcard/pool", &st) == -1) {
-        mkdir("/sdcard/pool", 0777);
-    }
-
-    if (stat("/sdcard/raw", &st) == -1) {
-        mkdir("/sdcard/raw", 0777);
-    }
-
-    if (stat("/sdcard/banks", &st) == -1) {
-        mkdir("/sdcard/banks", 0777);
-    }
-
-    if (stat("/sdcard/usr", &st) == -1) {
-        mkdir("/sdcard/usr", 0777);
-    }
-
-    // check if config file exists & has valid structure, else create/rewrite
-    if (stat("/sdcard/CONFIG.JSN", &st) == -1 || validateConfig() == -1) {
-        ESP_LOGE("SD", "Config not found/invalid");
-        createConfigFile(); 
-    }
-    
-    // check if default preset bank file exists, if not, create
-    if (stat("/sdcard/banks/default.JSN", &st) == -1) {
-        initBank("/sdcard/banks/default.JSN");
-    }
+    checkSDStructure();
 
     // Card has been initialized, print its properties
     sdmmc_card_print_info(stdout, card);
