@@ -18,17 +18,28 @@ static int print_list_elements(list_item_t* it){
 }
 */
 
+static void createSilenceFile(){
+    ESP_LOGI("SD", "Creating silence file");
+    FILE * f = fopen("/sdcard/SILENCE.RAW", "wb");
+    uint32_t zero = 0;
+    for(int i=0;i<8192*4;i++){
+        fwrite(&zero, sizeof(uint32_t), 1, f);
+    }
+    fclose(f);
+}
+
 static void createConfigFile(){
     ESP_LOGI("SD", "Creating config file");
+    createSilenceFile();
     cJSON *root = cJSON_CreateObject();
     cJSON *array = cJSON_CreateArray();
     cJSON *val = NULL;
     int i;
     for(i=0; i<2; i++){
         cJSON *obj = cJSON_CreateObject();
-        val = cJSON_CreateString("");
+        val = cJSON_CreateString("SILENCE");
         cJSON_AddItemToObject(obj, "name", val);
-        val = cJSON_CreateString("");
+        val = cJSON_CreateString("/SILENCE.RAW");
         cJSON_AddItemToObject(obj, "file", val);
         cJSON_AddItemToArray(array, obj);
     }
@@ -125,9 +136,11 @@ void repairAudioFileAssigment(int id){
     }else{
         remove(filename);
     }
-    // set file name config to empty string
-    cJSON_ReplaceItemInObjectCaseSensitive(fileObj, "name", cJSON_CreateString(""));
-    cJSON_ReplaceItemInObjectCaseSensitive(fileObj, "file", cJSON_CreateString(""));
+    // re-create initial silence file
+    createSilenceFile();
+    // set file name config to initial silence file
+    cJSON_ReplaceItemInObjectCaseSensitive(fileObj, "name", cJSON_CreateString("SILENCE"));
+    cJSON_ReplaceItemInObjectCaseSensitive(fileObj, "file", cJSON_CreateString("/SILENCE.RAW"));
     writeJSONFile("/sdcard/CONFIG.JSN", cJSON_Print(cfgData));
 }
 
