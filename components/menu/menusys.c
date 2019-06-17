@@ -17,6 +17,7 @@
 #include <stdlib.h> 
 #include <string.h>
 #include "menusys.h"
+#include "esp_log.h"
 
 
 menusys_t *menusys_create(){
@@ -73,7 +74,7 @@ void menusys_process_ev(menusys_t *ms, int ev, void* ev_data){
             it_id_prev = it->id;
             int new_item_id = cbf(it->id, ev, ev_data);
             ev_handled = 1;
-            if(new_item_id != 0){
+            while(new_item_id != 0){
                 for(int j=0;j<ms->n_menus;j++){
                     if(ms->items_array[j]->id == new_item_id){
                         ms->active_item = ms->items_array[j];
@@ -81,7 +82,9 @@ void menusys_process_ev(menusys_t *ms, int ev, void* ev_data){
                         // call once default handler of new menu first transition, event -1
                         if(it->cb_default != NULL){
                             cbf = it->cb_default;
-                            cbf(it_id_prev, -1, NULL);
+                            new_item_id = cbf(it_id_prev, -1, NULL);
+                        }else{
+                            new_item_id = 0;
                         }
                         break;
                     }
@@ -94,7 +97,7 @@ void menusys_process_ev(menusys_t *ms, int ev, void* ev_data){
         _f_ptr cbf = it->cb_default;
         it_id_prev = it->id;
         int new_item_id = cbf(it->id, ev, ev_data);
-        if(new_item_id != 0){
+        while(new_item_id != 0){
             for(int j=0;j<ms->n_menus;j++){
                 if(ms->items_array[j]->id == new_item_id){
                     ms->active_item = ms->items_array[j];
@@ -102,7 +105,9 @@ void menusys_process_ev(menusys_t *ms, int ev, void* ev_data){
                     // call once default handler of new menu first transition, event -1
                     if(it->cb_default != NULL){
                         cbf = it->cb_default;
-                        cbf(it_id_prev, -1, NULL);
+                        new_item_id = cbf(it_id_prev, -1, NULL);
+                    }else{
+                        new_item_id = 0;
                     }
                     break;
                 }

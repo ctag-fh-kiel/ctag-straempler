@@ -1085,13 +1085,19 @@ static int bank_def_handler(int it_id, int event, void* event_data){
 static int filebrowser_def_handler(int it_id, int event, void* event_data){
     static list_t *file_list;
     static int currentFile = 0, activeSlot = 0;
-    static cJSON *info, *cfgData, *slots, *slotObject;
+    static cJSON *info = NULL, *cfgData, *slots, *slotObject;
     char buf[64], *id;
     
     switch(event){
         case EV_ENTERED_MENU:
             file_list = list_create();
             getFilesInDir(file_list, "/sdcard/POOL", ".MP3");
+            // check if sound file pool is empty
+            if(file_list->count == 0){
+                ESP_LOGW("MENU", "No files in pool to browse");
+                list_free(file_list);
+                return M_SLOT_TYPESELECT;
+            }
             activeSlot = (int) _state_data;
             if(file_list->count == 0) break;
             cfgData = readJSONFileAsCJSON("/sdcard/CONFIG.JSN");
@@ -1152,7 +1158,7 @@ static int filebrowser_def_handler(int it_id, int event, void* event_data){
             break;
             */
         case EV_TIMER_REPEATING_FAST:
-            menuTFTAnimateFileBrowser(info);
+            if(info)menuTFTAnimateFileBrowser(info);
             break;
         default:
             break;
@@ -1164,13 +1170,19 @@ static int filebrowser_def_handler(int it_id, int event, void* event_data){
 static int userfilebrowser_def_handler(int it_id, int event, void* event_data){
     static list_t *file_list;
     static int currentFile = 0, activeSlot = 0;
-    static cJSON *info, *cfgData, *slots, *slotObject;
+    static cJSON *info = NULL, *cfgData, *slots, *slotObject;
     char buf[64], *name;
 
     switch(event){
         case EV_ENTERED_MENU:
             file_list = list_create();
             getFilesInDir(file_list, "/sdcard/usr", ".RAW");
+            // check if sound file pool is empty
+            if(file_list->count == 0){
+                ESP_LOGW("MENU", "No files in usr to browse");
+                list_free(file_list);  
+                return M_SLOT_TYPESELECT;
+            }
             activeSlot = (int) _state_data;
             if(file_list->count == 0) break;
             cfgData = readJSONFileAsCJSON("/sdcard/CONFIG.JSN");
@@ -1186,7 +1198,7 @@ static int userfilebrowser_def_handler(int it_id, int event, void* event_data){
             menuTFTPrintFileBrowser(currentFile, file_list->count, info);
             break;
         case EV_TIMER_REPEATING_FAST:
-            menuTFTAnimateFileBrowser(info);
+            if(info)menuTFTAnimateFileBrowser(info);
             break;
         case EV_FWD:
             currentFile++;
