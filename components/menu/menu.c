@@ -2513,7 +2513,8 @@ void initMenu(xQueueHandle ui_queue_v0, xQueueHandle ui_queue_v1, xQueueHandle e
     menusys_new_item(_ms, M_BROWSE);
     menusys_item_set_default_cb(_ms, M_BROWSE, browse_def_handler);
         menusys_new_item(_ms, M_BROWSE_TAG);
-        menusys_item_set_default_cb(_ms, M_BROWSE_TAG, browse_tag_def_handler);
+        //menusys_item_set_default_cb(_ms, M_BROWSE_TAG, browse_tag_def_handler); only partially functional at this point
+        menusys_item_set_default_cb(_ms, M_BROWSE_TAG, browse_search_def_handler);
             menusys_new_item(_ms, M_BROWSE_TAG_RESULTS);
             menusys_item_set_default_cb(_ms, M_BROWSE_TAG_RESULTS, browse_tag_results_def_handler);
         menusys_new_item(_ms, M_BROWSE_SEARCH);
