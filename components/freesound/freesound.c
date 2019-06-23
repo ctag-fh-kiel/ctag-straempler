@@ -186,18 +186,20 @@ int instance_callback(request_t *req, char *data, int len)
     
     if(rcv == 0){
         (*pbuf) = '\0';
-        ESP_LOGW("TAG","%s", buf);
+        //ESP_LOGW("TAG","%s", buf);
         char fnamebuf[64];
         cJSON *root = cJSON_Parse(buf);
         // test is file exists at all at freesound, if not leave
-        if(!strcmp(cJSON_GetObjectItem(root,"detail")->valuestring, "Not found.")){
-            cJSON_Delete(root);
-            free(buf);
-            ev.event = EV_FREESND_NOT_FOUND;
-            ev.event_data = NULL;
-            xQueueSend(ui_ev_queue, &ev, portMAX_DELAY);    
-            return 0;
-        };
+        if(cJSON_GetObjectItem(root,"detail") != NULL){
+            if(!strcmp(cJSON_GetObjectItem(root,"detail")->valuestring, "Not found.")){
+                cJSON_Delete(root);
+                free(buf);
+                ev.event = EV_FREESND_NOT_FOUND;
+                ev.event_data = NULL;
+                xQueueSend(ui_ev_queue, &ev, portMAX_DELAY);    
+                return 0;
+            };
+        }
         // otherwise acquire preview for decoding
         cJSON *previews = cJSON_GetObjectItem(root,"previews");
         int id = cJSON_GetObjectItem(root, "id")->valueint;
