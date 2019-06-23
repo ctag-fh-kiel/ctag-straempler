@@ -100,6 +100,15 @@ void wifiWaitForConnected(){
     xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
 }
 
+// returns true
+int isWiFiConnected(){
+    EventBits_t bits;
+    bits = xEventGroupGetBits( wifi_event_group );
+    if(bits & CONNECTED_BIT) 
+        return 1;
+    return 0;
+}
+
 
 static void start_mdns_service()
 {

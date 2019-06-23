@@ -348,6 +348,7 @@ static int browse_def_handler(int it_id, int event, void* event_data){
     
     switch(event){
         case EV_ENTERED_MENU:
+            if(!isWiFiConnected()) return M_MAIN;
             menuTFTPrintMenuH(browse_menus, &n_browse_menus);
             menuTFTSelectMenuItemH(&menu_state_current, 0, browse_menus, &n_browse_menus);
             break;
