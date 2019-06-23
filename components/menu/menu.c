@@ -1445,6 +1445,8 @@ static int browse_id_res_def_handler(int it_id, int event, void* event_data){
             menuTFTUpdateProgress("Download", (int)event_data);
             break;
         case EV_FREESND_MP3_COMPLETE:
+        case EV_FREESND_NOT_FOUND:
+            // a ui message would make sense here
             isBusy = false;
         case EV_LONG_PRESS:
             if(isBusy) break;

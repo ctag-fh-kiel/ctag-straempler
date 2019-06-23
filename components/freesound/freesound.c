@@ -160,8 +160,11 @@ int instance_callback(request_t *req, char *data, int len)
     req_list_t *found = req->response->header;
     static int rcv = 0;
     static char *buf = NULL, *pbuf = NULL;
+    ui_ev_ts_t ev;
+
     while(found->next != NULL) {
         found = found->next;
+        //  ESP_LOGW("HEADER", "%s:%s", (char*)found->key, (char*)found->value);
         if(!strcmp((char*)found->key, "Content-Length")){
             //ESP_LOGI(TAG,"Response header %s:%s", (char*)found->key, (char*)found->value);
             int sz = atoi((char*)found->value);
@@ -173,8 +176,7 @@ int instance_callback(request_t *req, char *data, int len)
             break;
         }
     }
-    
-    
+  
     if(rcv > 0){
         rcv -= len;
         memcpy(pbuf, data, len);
@@ -184,9 +186,19 @@ int instance_callback(request_t *req, char *data, int len)
     
     if(rcv == 0){
         (*pbuf) = '\0';
-        //ESP_LOGW("TAG","%s", buf);
+        ESP_LOGW("TAG","%s", buf);
         char fnamebuf[64];
         cJSON *root = cJSON_Parse(buf);
+        // test is file exists at all at freesound, if not leave
+        if(!strcmp(cJSON_GetObjectItem(root,"detail")->valuestring, "Not found.")){
+            cJSON_Delete(root);
+            free(buf);
+            ev.event = EV_FREESND_NOT_FOUND;
+            ev.event_data = NULL;
+            xQueueSend(ui_ev_queue, &ev, portMAX_DELAY);    
+            return 0;
+        };
+        // otherwise acquire preview for decoding
         cJSON *previews = cJSON_GetObjectItem(root,"previews");
         int id = cJSON_GetObjectItem(root, "id")->valueint;
         char* mp3_url = cJSON_GetObjectItem(previews,"preview-hq-mp3")->valuestring;
