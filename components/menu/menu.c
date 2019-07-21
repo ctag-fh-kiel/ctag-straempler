@@ -246,7 +246,7 @@ static int settings_def_handler(int it_id, int event, void* event_data){
 }
 
 static int settings_input_def_handler(int it_id, int event, void* event_data){
-    const char *c_list = "=0123456789abcdefghijklmnopqrstuvwxyz-_ !?<^";
+    const char *c_list = "=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_ !?<^";
     static int pos = 0, c = 1, menu_pos = 0;
     static char input[48];
     char *buf;
@@ -277,7 +277,7 @@ static int settings_input_def_handler(int it_id, int event, void* event_data){
             }else ESP_LOGE("PRESET", "_state_json is NULL");
         case EV_FWD:
             c++;
-            if(c>43) c = 43;
+            if(c>69) c = 69;
             menuTFTPrintChar(input, pos, c_list[c], PRINT_NORM);
             break;
         case EV_BWD:
