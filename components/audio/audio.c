@@ -80,7 +80,7 @@ void trigger_buffer_reload(int vid, TaskHandle_t *handle)
     xTaskNotify(*handle, 6 << vid, eSetBits);
 }
 
-static void file_reader_task_1(void *pvParams)
+static void IRAM_ATTR file_reader_task_1(void *pvParams)
 {
     uint32_t uxBits;
     ui_ev_ts_t ev;
@@ -126,7 +126,7 @@ static void file_reader_task_1(void *pvParams)
     }
 }
 
-static void file_reader_task_2(void *pvParams)
+static void IRAM_ATTR file_reader_task_2(void *pvParams)
 {
     uint32_t uxBits;
     ui_ev_ts_t ev;
@@ -169,7 +169,7 @@ static void file_reader_task_2(void *pvParams)
     }
 }
 
-static void file_manipulation_task(void *pvParams)
+static void IRAM_ATTR file_manipulation_task(void *pvParams)
 {
     uint32_t uxBits;
 
@@ -949,7 +949,7 @@ void disableTrigModeLatch(uint8_t vid){
     trigModeLatch[vid] = false;
 }
 
-static void audio_task(void *pvParams)
+static void IRAM_ATTR audio_task(void *pvParams)
 {
     // audio buffers
     int32_t out[BUF_SZ], in[BUF_SZ];
@@ -1327,6 +1327,6 @@ void initAudio(xQueueHandle ui_queue_v0, xQueueHandle ui_queue_v1, xQueueHandle 
     initAudioStructs();
     assignAudioFiles();
 
-    xTaskCreatePinnedToCore(audio_task, "audio_task", 4096, NULL, 23, &audio_task_h, 1);
+    xTaskCreatePinnedToCore(audio_task, "audio_task", 8192, NULL, 23, &audio_task_h, 1);
 
 }
