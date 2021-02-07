@@ -1,6 +1,10 @@
 # **CTAG Strämpler**
 
+!!**NEW**!! Strämpler can now run [CTAG TBD](https://github.com/ctag-fh-kiel/ctag-tbd) as alternative firmware! Enclosed in /bin folder!
+
 ![Strämpler harware UI](https://raw.githubusercontent.com/wiki/ctag-fh-kiel/ctag-straempler/img/straempler-boot.jpg)
+
+
 
 ## What it is:
 
