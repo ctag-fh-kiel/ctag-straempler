@@ -79,8 +79,6 @@ All hardware design can be found [https://github.com/ctag-fh-kiel/esp32-eurorack
 
 ## Links
 - [Demonstration videos on YouTube](https://youtu.be/zmj8tKPHV8g).
-- [PCB source files](https://github.com/ctag-fh-kiel/esp32-eurorack-audio), in KiCad format.
-- [TROLL8](https://github.com/ctag-fh-kiel/troll-8), another cool CTAG project.
 
 ## Licenses:
 - Hardware is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/).
