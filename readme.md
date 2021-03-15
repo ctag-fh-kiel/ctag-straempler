@@ -94,5 +94,5 @@ All hardware design can be found [https://github.com/ctag-fh-kiel/esp32-eurorack
     - Phillip Lamp
     - Niklas Wantrupp
     - With kind support for the front panel design by David Knop from [instruments of things](http://www.instrumentsofthings.com/).
-- [Anumbra](http://www.antumbra.eu/)
+- [Antumbra](http://www.antumbra.eu/)
 - More people like you :)
