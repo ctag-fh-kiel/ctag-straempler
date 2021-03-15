@@ -4,3 +4,6 @@
 [submodule "esp-request"]
 	path = components/esp-request
 	url = https://github.com/ctag-fh-kiel/esp-request.git
+[submodule "hardware/ctag/esp32-eurorack-audio"]
+	path = hardware/ctag/esp32-eurorack-audio
+	url = https://github.com/ctag-fh-kiel/esp32-eurorack-audio.git

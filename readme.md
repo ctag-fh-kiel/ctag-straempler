@@ -1,4 +1,5 @@
 # **CTAG Strämpler**
+This repository contains the firmware and the hardwaredesigns (CTAG and [Antumbra](http://www.antumbra.eu/)) of Strämpler.
 
 !!**NEW**!! Strämpler can now run [CTAG TBD](https://github.com/ctag-fh-kiel/ctag-tbd) as alternative firmware! Enclosed in /bin folder!
 
@@ -7,7 +8,6 @@
 
 
 ## What it is:
-
 - Half streamer, half sampler, therefore called Strämpler (close to German word of Strampler meaning romper suit).
 - Allows streaming of large audio files from SD card (limit 2GB file size due to FAT32 used).
 - A eurorack modular synth module with 22 HP width and an internet connection.
@@ -94,4 +94,5 @@ All hardware design can be found [https://github.com/ctag-fh-kiel/esp32-eurorack
     - Phillip Lamp
     - Niklas Wantrupp
     - With kind support for the front panel design by David Knop from [instruments of things](http://www.instrumentsofthings.com/).
+- [Anumbra](http://www.antumbra.eu/)
 - More people like you :)
