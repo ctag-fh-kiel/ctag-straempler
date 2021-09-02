@@ -282,7 +282,7 @@ static void search_request(void *pvParameters)
     const char *query = (const char*) pvParameters;
     char url[1024];
     ESP_LOGW("search", "%s", query);
-    sprintf(url, "http://freesound.org/apiv2/search/text/?token=%s&filter=tag:%s", freesound_token, query);
+    sprintf(url, "https://freesound.org/apiv2/search/text/?token=%s&filter=tag:%s", freesound_token, query);
     request_t *req;
     wifiWaitForConnected();
     req = req_new(url); 
@@ -301,7 +301,8 @@ static void instance_request(void *pvParameters)
     const char *id = (const char*) pvParameters;
     char url[1024];
     ESP_LOGW("id", "%s", id);
-    sprintf(url, "http://freesound.org/apiv2/sounds/%s/?token=%s", id, freesound_token);
+    sprintf(url, "https://freesound.org/apiv2/sounds/%s/?token=%s", id, freesound_token);
+    ESP_LOGI("fsnd", "%s", url);
     request_t *req;
     wifiWaitForConnected();
     req = req_new(url); 

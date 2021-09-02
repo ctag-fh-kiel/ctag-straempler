@@ -1,0 +1,4 @@
+#pragma once
+
+#define STRAMPLER_HW_VERSION "@STRAMPLER_FW@"
+#define STRAMPLER_FW_VERSION "@STRAMPLER_FW@"

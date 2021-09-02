@@ -13,6 +13,7 @@
 #include "audio_luts.h"
 #include "list.h"
 #include "freertos/timers.h"
+#include "strampler_version.h"
 
 //definitions for element highlighting and selection
 int _cur_row = 0, _cur_el = -1;
@@ -96,7 +97,7 @@ void menuTFTPrintAbout(){
     _fg = TFT_WHITE;
 	_bg = TFT_BLACK;
     TFT_print("Freesound Sampler Version:", 4, 4);
-    TFT_print(VERSION, 4, TFT_Y);
+    TFT_print(STRAMPLER_FW_VERSION, 4, TFT_Y);
     TFT_Y += TFT_getfontheight();
     TFT_print("Created by: ", 4, TFT_Y);
     TFT_print("Niklas Wantrupp", 4, TFT_Y);
@@ -241,7 +242,7 @@ void menuTFTPrintSettings(const cJSON *data){
     const int n_hidden_items = sizeof(hidden_items)/sizeof(int);
     _bg = TFT_BLACK;
     _fg = TFT_WHITE;
-    char buf[32];
+    char buf[33];
     int x = 4, cnt = 0;
     cJSON *val = NULL;
     if(data != NULL){
