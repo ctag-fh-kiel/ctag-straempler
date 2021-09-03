@@ -208,7 +208,7 @@ void initUI(){
     initMenu(ui_param_queue_v0, ui_param_queue_v1, effect_param_queue, pbs_state_queue_v0, pbs_state_queue_v1, mode_queue_v0, mode_queue_v1, matrix_event_queue, ui_ev_queue);
 
     //xTaskCreatePinnedToCore(ui_task, "ui_task", usStackDepth, params, 10, gpio_task, 1);
-    xTaskCreatePinnedToCore(ui_ev_loop, "ui_ev_loop", 4096, params, 11, ui_task, 0);
+    xTaskCreatePinnedToCore(ui_ev_loop, "ui_ev_loop", 4096*2, params, 11, ui_task, 0);
     
     //initGPIO(ui_ev_queue, au_q);
     xTaskCreatePinnedToCore(timerRepeatSlow, "timerRepeatSlow", 2048, NULL, 10, NULL, 0);
