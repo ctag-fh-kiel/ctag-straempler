@@ -165,8 +165,8 @@ static void decoder_task(void* pvParams){
     FIL fin, fout;
     FRESULT fr;
     task_param_t *params = (task_param_t*) pvParams;
+    ESP_LOGI("MP3", "Decoder task, working with: fin %s, fout %s", params->fin, params->fout);
     fr = f_open(&fin, params->fin, FA_READ);
-    ESP_LOGI("MP3", "fin %s, fout %s", params->fin, params->fout);
     if(fr){
         ESP_LOGE("MP3", "Could not open infile %s", params->fin);
         free(pvParams);
@@ -213,6 +213,7 @@ static void decoder_task(void* pvParams){
 }
 
 void decodeMP3File(const char *id){
+    ESP_LOGI("MP3","Decode MP3");
     task_param_t *taskParams = (task_param_t*)calloc(1, sizeof(task_param_t));
     char s[64]; cJSON *fPars;
     snprintf(s, 64, "/pool/%s.MP3", id);
@@ -225,7 +226,7 @@ void decodeMP3File(const char *id){
     ESP_LOGI("MP3", "Infile %s, outfile %s", taskParams->fin, taskParams->fout);
     ESP_LOGI("MP3", "nChannels %d", taskParams->nChannels);
 
-    xTaskCreatePinnedToCore(decoder_task, "decoder_task", 8192*2, (void*)taskParams, 10, NULL, 0);
+    xTaskCreatePinnedToCore(&decoder_task, "decoder_task", 8192*3, (void*)taskParams, 10, NULL, 0);
 }
 
 /*

@@ -417,7 +417,7 @@ static void instance_request(void *pvParameters)
 
     // close file and finish up
     f_close(&_mp3_file);
-    ESP_LOGI("MP3","Completed");
+    ESP_LOGI("FREESOUND","Completed");
     ev.event = EV_FREESND_MP3_COMPLETE;
     ev.event_data = NULL;
     xQueueSend(ui_ev_queue, &ev, portMAX_DELAY);
@@ -426,6 +426,7 @@ static void instance_request(void *pvParameters)
     esp_http_client_close(client);
     esp_http_client_cleanup(client);
     vTaskDelete(NULL);
+    ESP_LOGI("FREESOUND","Returning");
 }
 
 static void init_token(){
@@ -459,7 +460,7 @@ void freesoundSearch(const char *query){
 void freesoundGetInstance(const char *id){
     void *params = (void*) id;
     
-    xTaskCreatePinnedToCore(&instance_request, "instance_request", 8192, params, 5, NULL, 0);
+    xTaskCreatePinnedToCore(&instance_request, "instance_request", 8192*2, params, 5, NULL, 0);
 }
 
 
