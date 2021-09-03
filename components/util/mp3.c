@@ -166,6 +166,7 @@ static void decoder_task(void* pvParams){
     FRESULT fr;
     task_param_t *params = (task_param_t*) pvParams;
     ESP_LOGI("MP3", "Decoder task, working with: fin %s, fout %s", params->fin, params->fout);
+
     fr = f_open(&fin, params->fin, FA_READ);
     if(fr){
         ESP_LOGE("MP3", "Could not open infile %s", params->fin);
@@ -175,6 +176,7 @@ static void decoder_task(void* pvParams){
     }
     uint32_t mp3FileSize = f_size(&fin);
     ESP_LOGI("MP3", "Size of mp3 file to be decoded %d", mp3FileSize);
+
     fr = f_open(&fout, params->fout, FA_CREATE_ALWAYS | FA_WRITE);
     if(fr){
         ESP_LOGE("MP3", "Could not open outfile %s", params->fout);
@@ -183,7 +185,7 @@ static void decoder_task(void* pvParams){
         vTaskDelete(NULL);
         return;
     }
-    
+
     input = (unsigned char*) malloc(MAX_FRAME_SIZE);
     ev.event = EV_DECODING_PROGRESS;
     ev.event_data = (void*)progress;
@@ -195,22 +197,12 @@ static void decoder_task(void* pvParams){
     f_close(&fin);
     f_close(&fout);
 
-    /*
-    for(;;){
-        //ESP_LOGI("", "Tick");
-        ev.event = EV_DECODING_PROGRESS;
-        ev.event_data = (void*)progress;
-        xQueueSend(ui_ev_queue, &ev, 0);
-        progress++;
-        if(progress == 100) break;
-        vTaskDelay(300 / portTICK_RATE_MS);
-    }
-    */
     ev.event = EV_DECODING_DONE;
     xQueueSend(ui_ev_queue, &ev, portMAX_DELAY);
     free(pvParams);
     vTaskDelete(NULL);
 }
+
 
 void decodeMP3File(const char *id){
     ESP_LOGI("MP3","Decode MP3");
@@ -225,9 +217,10 @@ void decodeMP3File(const char *id){
     taskParams->nChannels = cJSON_GetObjectItem(fPars, "channels")->valueint;
     ESP_LOGI("MP3", "Infile %s, outfile %s", taskParams->fin, taskParams->fout);
     ESP_LOGI("MP3", "nChannels %d", taskParams->nChannels);
-
-    xTaskCreatePinnedToCore(&decoder_task, "decoder_task", 8192*3, (void*)taskParams, 10, NULL, 0);
+    xTaskCreatePinnedToCore(decoder_task, "decoder_task", 8192*2, (void*)taskParams, 10, NULL, 0);
 }
+
+
 
 /*
 void decodeMP3(unsigned char* inputData, unsigned int len, FILE* outfile){

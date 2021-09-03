@@ -426,7 +426,6 @@ static void instance_request(void *pvParameters)
     esp_http_client_close(client);
     esp_http_client_cleanup(client);
     vTaskDelete(NULL);
-    ESP_LOGI("FREESOUND","Returning");
 }
 
 static void init_token(){

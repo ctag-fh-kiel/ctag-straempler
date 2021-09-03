@@ -48,6 +48,7 @@
 // J.Sz. 21/04/2006 #include "hlxclib/stdlib.h"		/* for malloc, free */ 
 #include "stdlib.h" // J.Sz. 21/04/2006
 #include "coder.h"
+#include "esp_heap_caps.h"
 
 /**************************************************************************************
  * Function:    ClearBuffer
@@ -106,13 +107,13 @@ MP3DecInfo *AllocateBuffers(void)
 		return 0;
 	ClearBuffer(mp3DecInfo, sizeof(MP3DecInfo));
 	
-	fh =  (FrameHeader *)     malloc(sizeof(FrameHeader));
-	si =  (SideInfo *)        malloc(sizeof(SideInfo));
-	sfi = (ScaleFactorInfo *) malloc(sizeof(ScaleFactorInfo));
-	hi =  (HuffmanInfo *)     malloc(sizeof(HuffmanInfo));
-	di =  (DequantInfo *)     malloc(sizeof(DequantInfo));
-	mi =  (IMDCTInfo *)       malloc(sizeof(IMDCTInfo));
-	sbi = (SubbandInfo *)     malloc(sizeof(SubbandInfo));
+	fh =  (FrameHeader *)     heap_caps_malloc(sizeof(FrameHeader), MALLOC_CAP_SPIRAM);
+	si =  (SideInfo *)        heap_caps_malloc(sizeof(SideInfo), MALLOC_CAP_SPIRAM);
+	sfi = (ScaleFactorInfo *) heap_caps_malloc(sizeof(ScaleFactorInfo), MALLOC_CAP_SPIRAM);
+	hi =  (HuffmanInfo *)     heap_caps_malloc(sizeof(HuffmanInfo), MALLOC_CAP_SPIRAM);
+	di =  (DequantInfo *)     heap_caps_malloc(sizeof(DequantInfo), MALLOC_CAP_SPIRAM);
+	mi =  (IMDCTInfo *)       heap_caps_malloc(sizeof(IMDCTInfo), MALLOC_CAP_SPIRAM);
+	sbi = (SubbandInfo *)     heap_caps_malloc(sizeof(SubbandInfo), MALLOC_CAP_SPIRAM);
 
 	mp3DecInfo->FrameHeaderPS =     (void *)fh;
 	mp3DecInfo->SideInfoPS =        (void *)si;
