@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -11,13 +10,10 @@
 #include "ui_events.h"
 #include "list.h"
 #include "esp_vfs_fat.h"
-
-#include "esp_request.h"
+#include "esp_http_client.h"
 
 static xQueueHandle ui_ev_queue = NULL;
 static char freesound_token[48];
-
-FIL _mp3_file;
 
 static int print_list_elements(list_item_t* it){
     printf("%s\n", (char*)it->value);
@@ -29,7 +25,7 @@ static int if_element(list_item_t* it, void* ptr){
     if(res==0) return 1;
     return 0;
 }
-
+/*
 static int tag_callback(request_t *req, char *data, int len)
 {
     req_list_t *found = req->response->header;
@@ -256,7 +252,7 @@ int search_callback(request_t *req, char *data, int len)
     if(rcv == 0){
         (*pbuf) = '\0';
         ESP_LOGW("FREESOUND","%s", buf);
-        /*
+
         cJSON *root = cJSON_Parse(buf);
         cJSON *previews = cJSON_GetObjectItem(root,"previews");
         char* mp3_url = cJSON_GetObjectItem(previews,"preview-hq-mp3")->valuestring;
@@ -269,12 +265,13 @@ int search_callback(request_t *req, char *data, int len)
         req_clean(req);
         cJSON_Delete(root);
         free(buf);
-        */
+
     } 
     return 0;
 }
+*/
 
-
+/*
 static void search_request(void *pvParameters)
 {
     const char *query = (const char*) pvParameters;
@@ -293,12 +290,13 @@ static void search_request(void *pvParameters)
     
     vTaskDelete(NULL);
 }
-
+*/
 static void instance_request(void *pvParameters)
 {
     const char *id = (const char*) pvParameters;
     char url[1024];
     ui_ev_ts_t ev;
+    FIL _mp3_file;
     cJSON *root = NULL;
     ESP_LOGW("id", "%s", id);
     sprintf(url, "https://freesound.org/apiv2/sounds/%s/?token=%s", id, freesound_token);
@@ -385,6 +383,7 @@ static void instance_request(void *pvParameters)
         heap_caps_free(buffer);
         esp_http_client_close(client);
         esp_http_client_cleanup(client);
+        f_close(&_mp3_file);
         vTaskDelete(NULL);
         return;
     }
@@ -401,6 +400,7 @@ static void instance_request(void *pvParameters)
             heap_caps_free(buffer);
             esp_http_client_close(client);
             esp_http_client_cleanup(client);
+            f_close(&_mp3_file);
             vTaskDelete(NULL);
             return;
         }
@@ -447,12 +447,12 @@ static void init_token(){
 
 void freesoundGetTags(const char *path){
     void *params = (void*) path;
-    xTaskCreatePinnedToCore(&tag_request, "tag_request", 8192, params, 5, NULL, 0);
+    //xTaskCreatePinnedToCore(&tag_request, "tag_request", 8192, params, 5, NULL, 0);
 }
 
 void freesoundSearch(const char *query){
     void *params = (void*) query;
-    xTaskCreatePinnedToCore(&search_request, "search_request", 8192, params, 5, NULL, 0);
+    //xTaskCreatePinnedToCore(&search_request, "search_request", 8192, params, 5, NULL, 0);
 }
 
 
