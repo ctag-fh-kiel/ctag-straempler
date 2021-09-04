@@ -7,10 +7,6 @@ include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 project(ctag-straempler)
 
-# modify idf to support large file seek in fatfs
-message(WARNING "Copying FATFS config file to IDF --> ESP IDF state modified!")
-file(COPY patchidf/ffconf.h DESTINATION $ENV{IDF_PATH}/components/fatfs/src/)
-
 # generate include definitions for hw + fw version
 execute_process(
         COMMAND bash -c "git describe --tags --abbrev=4"
