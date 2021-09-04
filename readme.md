@@ -72,8 +72,26 @@ This repository contains the firmware and the hardwaredesigns (CTAG and [Antumbr
     - The software is built using [Espressif IDF](https://esp-idf.readthedocs.io) using the C programming language. Intermediate knowledge of C is required to understand the code. Furthermore, some basic DSP algorithms are applied. A DSP newbie, however, could take the project to really get rolling and build up on DSP capabilities. CTAG Strämpler is ideal to try out and play with your own DSP algorithms.
 - The [Espressif ESP32](https://en.wikipedia.org/wiki/ESP32) platform used for CTAG Strämpler is, with regard to its computational power and I/O capabilities, hard at its limit. We're squeezing the platform here and are already surprised, what one can get out of $5 chip in the year 2019. Surely, other DSPs / microcontrollers could do a better job, but do they allow for internet of things as easily?
 
-## How to get started / build instructions (SW) / user manual:
-See the [Wiki pages](https://github.com/ctag-fh-kiel/ctag-straempler/wiki) of this project; where in particular [**build instructions**](https://github.com/ctag-fh-kiel/ctag-straempler/wiki/GettingStarted) can be found.
+## How to get started / user manual:
+See the [Wiki pages](https://github.com/ctag-fh-kiel/ctag-straempler/wiki) of this project.
+
+## Build instructions
+The easiest way is to create a fork on Github from this repository. Then make sure GitHub Actions are activated for your fork by going to the corresponding tab at your fork and clicking on the green button.
+Every time you push new commits into your fork (master or dev branch) the action will build a new draft release, which will upon successful run of the action be available at your fork's release tab.
+
+If you want to build on your own system, you can use a virtual development environment image with Docker (see here for [ESP IDF Docker instructions](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-docker-image.html)). 
+Here are some steps:
+- Install [Docker](https://www.docker.com/)
+- Install [Git](https://git-scm.com/)
+- Open a command line shell
+- Clone the Strämpler repository with ```git clone https://github.com/ctag-fh-kiel/ctag-straempler.git``` and change into it with ```cd ctag-straempler```
+- Build the firmware with ```docker run --rm -v $PWD:/project -w /project rma31/idf:v4.1-strampler idf.py build```
+
+You can edit the source files using any IDE / text editor you like.
+## Flash instructions
+- Either download the firmware from the Github release tab or use your own
+- Install [ESP Tool](https://github.com/espressif/esptool)
+- Adapt the [Firmware flash script](https://github.com/ctag-fh-kiel/ctag-straempler/blob/master/bin/flash.sh) to your system needs and flash the firmware
 
 ## Hardware
 All hardware design can be found [https://github.com/ctag-fh-kiel/esp32-eurorack-audio](https://github.com/ctag-fh-kiel/esp32-eurorack-audio).
