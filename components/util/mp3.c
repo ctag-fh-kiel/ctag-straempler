@@ -46,7 +46,7 @@ static void decode(FIL *mp3File, FIL* rawOut, int sz){
     ESP_LOGI("MP3", "Decoder instantiated");
 
     UINT nRead = 0; 
-    uint32_t offset, foundStartOfFrame = 0, oldProgress = 0;
+    int offset, foundStartOfFrame = 0, oldProgress = 0;
     do
     {
         // Read the input file
