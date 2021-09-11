@@ -292,8 +292,6 @@ void set_filter_values_ui(voice_t* voice, uint16_t base, uint16_t width, float q
 inline void apply_voice_fx(float* buf, int len, voice_t* voice, uint16_t* ctrl_data, int vid, float vol){
     float sample_left, sample_right;
     set_cutoff_values(voice, ctrl_data, vid);
-    float amp = 1.0f;
-    
 
     for(int i = 0; i < len/2; i++)
     {

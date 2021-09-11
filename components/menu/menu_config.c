@@ -16,7 +16,7 @@ void initTimeshift(int *tz_shift){
 }
 
 int wifiSettingsChanged(cJSON* curSettings){
-    cJSON *root = NULL, *settings = NULL, *val = NULL;
+    cJSON *root = NULL, *settings = NULL;
     root = readJSONFileAsCJSON("/sdcard/CONFIG.JSN");
     if(root != NULL){
         cJSON* element = NULL;
@@ -43,7 +43,7 @@ int wifiSettingsChanged(cJSON* curSettings){
 }
 
 void savePresetConfig(char* preset, char* bank){
-    cJSON *root = NULL, *settings = NULL, *val = NULL;
+    cJSON *root = NULL, *settings = NULL;
     root = readJSONFileAsCJSON("/sdcard/CONFIG.JSN");
     if(root != NULL) settings = cJSON_GetObjectItemCaseSensitive(root, "settings");
     if(settings != NULL){

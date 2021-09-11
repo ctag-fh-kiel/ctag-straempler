@@ -1,7 +1,5 @@
 #include <time.h>
 #include <errno.h>
-#include <sys/fcntl.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "freertos/FreeRTOS.h"
@@ -10,11 +8,8 @@
 #include "nvs_flash.h"
 #include "esp_system.h"
 #include "esp_event.h"
-#include "esp_event_loop.h"
 #include "esp_attr.h"
-#include <sys/time.h>
 #include <unistd.h>
-#include "lwip/err.h"
 #include "lwip/apps/sntp.h"
 #include "mdns.h"
 #include "esp_log.h"

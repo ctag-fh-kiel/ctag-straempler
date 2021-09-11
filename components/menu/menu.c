@@ -166,7 +166,7 @@ static int more_def_handler(int it_id, int event, void* event_data){
 static int settings_def_handler(int it_id, int event, void* event_data){
     const int menu_items[] = {SID_WIFI_SSID, SID_WIFI_PASSWD, SID_APIKEY, SID_TIMEZONE};
     const int items = sizeof(menu_items)/sizeof(int);
-    static int menu_pos = 0, activeSlot = 0, selected = 0;
+    static int menu_pos = 0, selected = 0;
     static cJSON *cfgData = NULL, *settings = NULL;
     switch(event){
         case EV_ENTERED_MENU:
@@ -763,8 +763,8 @@ static int matrix_def_handler(int it_id, int event, void* event_data){
     static int matrix_pos_v = 0, matrix_pos_h = 0;  //vertical/horizontal position
     static bool selected_v = 0, selected_h = 0;
     static int items_v = 8, items_h = 3;            //vertical/horizontal number of items in matrix
-    static int cur_destination = 0;                 //current displayed destination
     static int dst_changed = 0;
+    static int cur_destination = 0;
     switch(event){
         case EV_ENTERED_MENU:
             matrix_pos_v = 0;
@@ -1897,7 +1897,6 @@ static int preset_new_def_handler(int it_id, int event, void* event_data){
     static int pos = 0, c = 1;
     static char name[12];
     char *buf;
-    char nbuf[64];
     static cJSON *root, *bank, *preset;
     switch(event){
         case EV_ENTERED_MENU:
@@ -2146,7 +2145,7 @@ void initParams(){
 }
 
 cJSON* buildPreset(const char* name){
-    char fn[21], buf[20];
+    char buf[20];
     cJSON *val;
 
     cJSON *preset = cJSON_CreateObject();

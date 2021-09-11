@@ -27,7 +27,6 @@ static esp_err_t drop_sample_put_handler(httpd_req_t *req){
     char*  buf;
     size_t buf_len;
     FIL raw_file;
-    FRESULT fr;
     UINT bw;
     ui_ev_ts_t ev;
     int file_len_d100 = req->content_len / 100;
