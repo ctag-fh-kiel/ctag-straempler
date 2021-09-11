@@ -11,6 +11,7 @@
 #include "list.h"
 #include "esp_vfs_fat.h"
 #include "esp_http_client.h"
+#include <stdint.h>
 
 static xQueueHandle ui_ev_queue = NULL;
 static char freesound_token[48];
@@ -320,8 +321,8 @@ static void instance_request(void *pvParameters)
         return;
     }
 
-    int content_length =  esp_http_client_fetch_headers(client);
-    int total_read_len = 0, read_len;
+    uint32_t content_length =  esp_http_client_fetch_headers(client);
+    uint32_t total_read_len = 0, read_len;
     // one buffer at least 512 bytes large
     char *buffer = heap_caps_malloc(content_length + 1 < 512 ? 512 : content_length + 1, MALLOC_CAP_SPIRAM);
     assert(buffer!=NULL);
@@ -404,7 +405,8 @@ static void instance_request(void *pvParameters)
             vTaskDelete(NULL);
             return;
         }
-        progress = 100 - (content_length - total_read_len) * 100 / content_length;
+        progress = total_read_len * 100;
+        progress = progress / content_length;
         ev.event = EV_PROGRESS_UPDATE;
         ev.event_data = (void*)progress;
         if(oldProgress != progress)
