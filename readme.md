@@ -84,7 +84,7 @@ Here are some steps:
 - Install [Docker](https://www.docker.com/)
 - Install [Git](https://git-scm.com/)
 - Open a command line shell
-- Clone the Strämpler repository with ```git clone https://github.com/ctag-fh-kiel/ctag-straempler.git``` and change into it with ```cd ctag-straempler```
+- Clone the Strämpler repository and submodules with ```git clone --recurse-submodules https://github.com/ctag-fh-kiel/ctag-straempler.git``` and change into it with ```cd ctag-straempler```
 - Build the firmware with ```docker run --rm -v $PWD:/project -w /project rma31/idf:v4.1-strampler idf.py build```
 
 You can edit the source files using any IDE / text editor you like.
