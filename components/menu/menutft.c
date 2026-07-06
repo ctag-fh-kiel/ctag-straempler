@@ -811,7 +811,7 @@ void menuTFTPrintFilterValues(filter_data_t* data, int r){
 
 void menuTFTPrintPlaymodeValues(play_state_data_t *data, int r){
     int y = 0;
-    char tmp[10];
+    char tmp[16];   // must hold the longest playmode name ("Single Shot" = 12 incl. NUL)
     TFT_setclipwin(0,TFT_getfontheight()+9, _width-1, _height);
     
     _bg = TFT_BLACK;
@@ -825,7 +825,7 @@ void menuTFTPrintPlaymodeValues(play_state_data_t *data, int r){
     switch (r)
     {
         case SID_MODE:
-            sprintf(tmp, playmode_modes[data->mode]);
+            snprintf(tmp, sizeof(tmp), "%s", playmode_modes[data->mode]);
             menuTFTFlush(0, &_bg);
             TFT_print(tmp, _width/2, 3 + (TFT_getfontheight() + 3) * 0);
 
@@ -899,7 +899,7 @@ void menuTFTPrintPlaymodeValues(play_state_data_t *data, int r){
 
         case PRINT_ALL:
 
-            sprintf(tmp, playmode_modes[data->mode]);
+            snprintf(tmp, sizeof(tmp), "%s", playmode_modes[data->mode]);
             TFT_print(tmp, _width/2, 3 + (TFT_getfontheight() + 3) * y); 
             y++;
 
